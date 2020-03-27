@@ -1,28 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"math"
-	"math/rand"
-	"time"
-
-	"github.com/memochou1993/crawler/helper"
+	"github.com/memochou1993/crawler/controller"
 )
 
 func main() {
-	nums := int(math.Pow(52, 3))
-	codes := getCodes(nums)
-
-	fmt.Println(codes)
-}
-
-func getCodes(nums int) []string {
-	codes := helper.Codes(nums)
-
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(codes), func(i, j int) {
-		codes[i], codes[j] = codes[j], codes[i]
-	})
-
-	return codes
+	controller.Handle()
 }
