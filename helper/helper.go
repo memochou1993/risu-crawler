@@ -15,14 +15,25 @@ func Letters() []string {
 	return letters
 }
 
-// Codes func
-func Codes(index int) []string {
-	codes := []string{}
+// Code func
+func Code(num int) string {
+	code := ""
 
-	for index > 0 {
-		index--
-		codes = append([]string{Letters()[index%base]}, codes...)
-		index /= base
+	for num > 0 {
+		num--
+		code = Letters()[num%base] + code
+		num /= base
+	}
+
+	return code
+}
+
+// Codes func
+func Codes(nums int) []string {
+	codes := make([]string, nums)
+
+	for i := 0; i < nums; i++ {
+		codes[i] = Code(i)
 	}
 
 	return codes
