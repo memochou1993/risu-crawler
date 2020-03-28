@@ -3,7 +3,6 @@ package controller
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"io"
 	"math"
 	"math/rand"
@@ -50,14 +49,8 @@ func Handle() {
 
 	for i := 0; i < 20; i++ {
 		go func() {
-			defer helper.Measure(time.Now(), "main")
-
 			for code := range codeChan {
 				image := fetchImage(code)
-
-				nums--
-
-				fmt.Println("nums", nums)
 
 				go func() {
 					defer helper.Measure(time.Now(), "fetch")
