@@ -1,5 +1,10 @@
 package helper
 
+import (
+	"log"
+	"time"
+)
+
 const (
 	base = 52
 )
@@ -37,4 +42,9 @@ func Codes(nums int) []string {
 	}
 
 	return codes
+}
+
+// Measure func
+func Measure(start time.Time, name string) {
+	log.Printf("%s took %s", name, time.Since(start))
 }
