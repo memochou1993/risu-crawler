@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"io"
-	"math"
 	"math/rand"
 	"net/http"
 	"os"
@@ -15,7 +14,9 @@ import (
 )
 
 const (
-	baseURL = "https://risu.io/"
+	baseURL     string = "https://risu.io/"
+	frequency   int    = 140608
+	concurrency int    = 10
 )
 
 // Image struct
@@ -35,28 +36,31 @@ type FileInfo struct {
 
 // Handle func
 func Handle() {
-	nums := int(math.Pow(52, 2))
-	codes := generateCodes(nums)
+	codes := generateCodes(frequency)
 
 	codeChan := make(chan string)
 	imageChan := make(chan Image)
 
 	go func() {
-		for _, code := range codes {
-			codeChan <- code
+		for {
+			for _, code := range codes {
+				codeChan <- code
+			}
 		}
 	}()
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < concurrency; i++ {
 		go func() {
 			for code := range codeChan {
-				image := fetchImage(code)
+				go func(code string) {
+					defer helper.Measure(time.Now(), "fetch: "+code)
 
-				go func() {
-					defer helper.Measure(time.Now(), "fetch")
+					image := fetchImage(code)
 
 					imageChan <- image
-				}()
+				}(code)
+
+				time.Sleep(time.Duration(86400*concurrency/frequency) * time.Second)
 			}
 		}()
 	}
@@ -73,9 +77,9 @@ func (image *Image) setCode(code string) {
 }
 
 func (image *Image) download() error {
-	defer helper.Measure(time.Now(), "download")
+	defer helper.Measure(time.Now(), "download: "+image.Code)
 
-	name := "storage/" + image.Code + ".jpg"
+	name := "storage/" + image.Code + "_" + image.FileInfos[0].CreatedAt + ".jpg"
 	url := image.FileInfos[0].FilePath
 
 	return storeImage(name, url)
