@@ -15,7 +15,8 @@ import (
 
 const (
 	baseURL     string = "https://risu.io/"
-	frequency   int    = 140608
+	base        int    = 52
+	amount      int    = base * base * base
 	concurrency int    = 10
 )
 
@@ -36,7 +37,7 @@ type FileInfo struct {
 
 // Handle func
 func Handle() {
-	codes := generateCodes(frequency)
+	codes := generateCodes(amount)
 
 	codeChan := make(chan string)
 	imageChan := make(chan Image)
@@ -60,7 +61,7 @@ func Handle() {
 					imageChan <- image
 				}(code)
 
-				time.Sleep(time.Duration(86400*concurrency/frequency) * time.Second)
+				time.Sleep(time.Duration(86400*concurrency/amount) * time.Second)
 			}
 		}()
 	}
@@ -173,7 +174,7 @@ func getNode(n *html.Node) string {
 }
 
 func generateCodes(nums int) []string {
-	codes := helper.Codes(nums)
+	codes := helper.Codes(nums, base)
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(codes), func(i, j int) {

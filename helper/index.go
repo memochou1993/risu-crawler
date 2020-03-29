@@ -5,12 +5,8 @@ import (
 	"time"
 )
 
-const (
-	base = 52
-)
-
 // Letters func
-func Letters() []string {
+func Letters(base int) []string {
 	letters := make([]string, base)
 
 	for i := 0; i < base/2; i++ {
@@ -21,12 +17,14 @@ func Letters() []string {
 }
 
 // Code func
-func Code(num int) string {
+func Code(num int, base int) string {
 	code := ""
+
+	letters := Letters(base)
 
 	for num > 0 {
 		num--
-		code = Letters()[num%base] + code
+		code = letters[num%base] + code
 		num /= base
 	}
 
@@ -34,11 +32,11 @@ func Code(num int) string {
 }
 
 // Codes func
-func Codes(nums int) []string {
+func Codes(nums int, base int) []string {
 	codes := make([]string, nums)
 
 	for i := 0; i < nums; i++ {
-		codes[i] = Code(i)
+		codes[i] = Code(i, base)
 	}
 
 	return codes
