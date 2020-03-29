@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -80,7 +81,13 @@ func (image *Image) setCode(code string) {
 func (image *Image) download() error {
 	defer helper.Measure(time.Now(), "download")
 
-	name := fmt.Sprintf("storage/%s (%s).jpg", image.FileInfos[0].CreatedAt, image.Code)
+	date, err := time.Parse("2006-01-02 15:04:05", image.FileInfos[0].CreatedAt)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	name := fmt.Sprintf("storage/%s_%s.jpg", date.Format("20060102150405"), image.Code)
 	url := image.FileInfos[0].FilePath
 
 	return storeImage(name, url)
