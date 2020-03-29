@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Letters func
+// Letters generates different ASCII characters.
 func Letters(base int) []string {
 	letters := make([]string, base)
 
@@ -16,7 +16,7 @@ func Letters(base int) []string {
 	return letters
 }
 
-// Code func
+// Code returns the letter according to the given number.
 func Code(num int, base int) string {
 	code := ""
 
@@ -31,18 +31,7 @@ func Code(num int, base int) string {
 	return code
 }
 
-// Codes func
-func Codes(nums int, base int) []string {
-	codes := make([]string, nums)
-
-	for i := 0; i < nums; i++ {
-		codes[i] = Code(i, base)
-	}
-
-	return codes
-}
-
-// Measure func
+// Measure measures the execution time.
 func Measure(start time.Time, name string) {
 	log.Printf("%s took %s", name, time.Since(start))
 }

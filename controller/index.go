@@ -3,6 +3,7 @@ package controller
 import (
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
@@ -38,7 +39,6 @@ type FileInfo struct {
 // Handle func
 func Handle() {
 	codes := generateCodes(amount)
-
 	codeChan := make(chan string)
 	imageChan := make(chan Image)
 
@@ -53,13 +53,13 @@ func Handle() {
 	for i := 0; i < concurrency; i++ {
 		go func() {
 			for code := range codeChan {
-				go func(code string) {
-					defer helper.Measure(time.Now(), "fetch: "+code)
+				image := fetchImage(code)
 
-					image := fetchImage(code)
+				go func() {
+					defer helper.Measure(time.Now(), "fetch")
 
 					imageChan <- image
-				}(code)
+				}()
 
 				time.Sleep(time.Duration(86400*concurrency/amount) * time.Second)
 			}
@@ -78,9 +78,9 @@ func (image *Image) setCode(code string) {
 }
 
 func (image *Image) download() error {
-	defer helper.Measure(time.Now(), "download: "+image.Code)
+	defer helper.Measure(time.Now(), "download")
 
-	name := "storage/" + image.Code + "_" + image.FileInfos[0].CreatedAt + ".jpg"
+	name := fmt.Sprintf("storage/%s (%s).jpg", image.FileInfos[0].CreatedAt, image.Code)
 	url := image.FileInfos[0].FilePath
 
 	return storeImage(name, url)
@@ -174,7 +174,11 @@ func getNode(n *html.Node) string {
 }
 
 func generateCodes(nums int) []string {
-	codes := helper.Codes(nums, base)
+	codes := make([]string, nums)
+
+	for i := 0; i < nums; i++ {
+		codes[i] = helper.Code(i, base)
+	}
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(codes), func(i, j int) {
