@@ -9,4 +9,4 @@ services:
     volumes:
       - ./storage:/root/storage
     ports:
-      - "8083:8083"
+      - "7000:7000"
