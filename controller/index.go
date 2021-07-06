@@ -57,7 +57,7 @@ func Handle() {
 				image := fetchImage(code)
 
 				go func() {
-					defer helper.Measure(time.Now(), "fetch")
+					defer helper.Measure(time.Now(), fmt.Sprintf("fetch \"%s\"", code))
 
 					imageChan <- image
 				}()
@@ -82,7 +82,6 @@ func (image *Image) download() error {
 	defer helper.Measure(time.Now(), "download")
 
 	date, err := time.Parse("2006-01-02 15:04:05", image.FileInfos[0].CreatedAt)
-
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -95,19 +94,15 @@ func (image *Image) download() error {
 
 func storeImage(path string, url string) error {
 	resp, err := http.Get(url)
-
 	if err != nil {
 		return err
 	}
-
 	defer resp.Body.Close()
 
 	file, err := os.Create(path)
-
 	if err != nil {
 		return err
 	}
-
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
@@ -128,27 +123,22 @@ func fetchImage(code string) Image {
 	}
 
 	req, err := http.NewRequest("GET", baseURL+code, nil)
-
 	if err != nil {
 		return image
 	}
 
 	resp, err := client.Do(req)
-
 	if err != nil {
 		return image
 	}
-
 	defer resp.Body.Close()
 
 	doc, err := html.Parse(resp.Body)
-
 	if err != nil {
 		return image
 	}
 
 	node := getNode(doc)
-
 	if err = json.Unmarshal([]byte(node), &image); err != nil {
 		return image
 	}
@@ -162,7 +152,6 @@ func getNode(n *html.Node) string {
 	node := ""
 
 	var f func(*html.Node)
-
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode && n.Data == "page-image" {
 			for _, a := range n.Attr {
@@ -182,15 +171,9 @@ func getNode(n *html.Node) string {
 
 func generateCodes(nums int) []string {
 	codes := make([]string, nums)
-
 	for i := 0; i < nums; i++ {
-		codes[i] = helper.Code(i, base)
+		codes[i] = helper.Code(i+1, base)
 	}
-
 	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(codes), func(i, j int) {
-		codes[i], codes[j] = codes[j], codes[i]
-	})
-
 	return codes
 }
