@@ -1,4 +1,4 @@
-module github.com/memochou1993/crawler
+module github.com/memochou1993/risu-crawler
 
 go 1.13
 

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/memochou1993/crawler/controller"
+	"github.com/memochou1993/risu-crawler/controller"
 )
 
 func main() {

@@ -2,7 +2,7 @@ version: "3"
 
 services:
   app:
-    container_name: url-shortener-crawler
+    container_name: risu-crawler
     build:
       context: .
       dockerfile: Dockerfile

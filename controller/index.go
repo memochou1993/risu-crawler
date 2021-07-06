@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/memochou1993/crawler/helper"
+	"github.com/memochou1993/risu-crawler/helper"
 	"golang.org/x/net/html"
 )
 
